@@ -92,6 +92,14 @@ h6 {
   }
 }
 
+.listing-body>h3{
+  color: var(--verde-padrao) !important;
+}
+
+.toolbar-inner{
+  width: 550px !important;
+}
+
 h2,
 button {
   font-family: 'Saira Condensed', Arial, Helvetica, sans-serif !important;
