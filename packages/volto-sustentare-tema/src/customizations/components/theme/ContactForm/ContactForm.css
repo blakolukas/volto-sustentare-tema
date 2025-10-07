@@ -7,7 +7,7 @@
 
 
 #contact-form .container {
-  max-width: var(--layout-container-width);
+  max-width: var(--layout-container-width) !important;
   margin: 0 auto;
   padding: 0 var(--padding-default);
 }

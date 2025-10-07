@@ -3,14 +3,16 @@
  * @module customizations/components/theme/ContactForm/ContactForm
  */
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { compose } from 'redux';
 import { Container, Form, Button, Message } from 'semantic-ui-react';
 import { toast } from 'react-toastify';
-import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
+import { defineMessages, injectIntl, FormattedMessage, useIntl } from 'react-intl';
+import { useHistory } from 'react-router-dom';
 import { Helmet } from '@plone/volto/helpers';
+import { emailNotification } from '@plone/volto/actions/emailNotification/emailNotification';
 import config from '@plone/volto/registry';
 import './ContactForm.css';
 
@@ -85,7 +87,19 @@ const messages = defineMessages({
   },
 });
 
-function ContactForm({ intl }) {
+const useEmailNotification = () => {
+  const loading = useSelector((state) => state.emailNotification.loading);
+  const loaded = useSelector((state) => state.emailNotification.loaded);
+  const error = useSelector((state) => state.emailNotification.error);
+
+  return { loading, loaded, error };
+};
+
+function ContactForm() {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { loaded, loading, error } = useEmailNotification();
+  const intl = useIntl();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -129,6 +143,10 @@ function ContactForm({ intl }) {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
+  const handleCancel = useCallback(() => {
+    history.goBack();
+  }, [history]);
 
   // Handler para mudanças nos campos
   const handleChange = (_, { name, value }) => {
@@ -146,7 +164,6 @@ function ContactForm({ intl }) {
     }
   };
 
-  // Handler para envio do formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -157,59 +174,12 @@ function ContactForm({ intl }) {
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-    try {
-      // Aqui você faria a chamada para a API do Plone
-      // Por exemplo, usando o endpoint de e-mail ou um endpoint customizado
-      const response = await fetch(`${config.settings.apiPath}/send-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to: 'sustentare@procergs.rs.gov.br',
-          from: formData.email,
-          name: formData.name,
-          phone: formData.phone,
-          subject: formData.subject,
-          message: formData.message,
-        }),
-      });
 
-      if (response.ok) {
-        setSubmitStatus('success');
-        toast.success(intl.formatMessage(messages.successMessage));
+    dispatch(emailNotification(formData.email, formData.message, formData.name, formData.subject));
 
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          subject: '',
-          message: '',
-        });
-      } else {
-        throw new Error('Erro no envio');
-      }
-    } catch (error) {
-      console.error('Erro ao enviar formulário:', error);
-      setSubmitStatus('error');
-      toast.error(intl.formatMessage(messages.errorMessage));
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
-  const handleCancel = () => {
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: '',
-    });
-    setErrors({});
-    setSubmitStatus(null);
-  };
-
+  
   return (
     <Container id="contact-form">
       <Helmet title={intl.formatMessage(messages.contact)} />
