@@ -324,8 +324,8 @@ body.has-sidebar .btn-scroll {
   }
   .logo-nav-wrapper button {
     padding: 15px 8px;
-    font-size: 13px;
     border: 0 !important;
+    font-size: 13px;
   }
   .logo-nav-wrapper.home-icon a {
     padding: 15px 8px;
@@ -341,13 +341,13 @@ body.has-sidebar .btn-scroll {
     font-size: 4.7vw !important;
   }
 
-  .nav-item-wrapper.has-submenu{
-    border-left: 2px solid var(--verde-padrao);
-    border-right: 2px solid var(--verde-padrao);
+  .nav-item-wrapper.has-submenu {
     flex: 1;
+    border-right: 2px solid var(--verde-padrao);
+    border-left: 2px solid var(--verde-padrao);
     justify-items: center;
   }
-  .nav-item-wrapper.has-submenu button{
+  .nav-item-wrapper.has-submenu button {
     flex: 1;
     justify-content: space-between;
   }

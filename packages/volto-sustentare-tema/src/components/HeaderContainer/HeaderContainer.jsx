@@ -16,7 +16,19 @@ const HeaderContainer = ({
   siteAction,
   siteTitle,
 }) => {
-  const navigationItems = useSelector((state) => state.navigation?.items || []);
+  const { items = [], loading } = useSelector(
+    (state) => state.navigation || {},
+  );
+  const navigationItems =
+    !loading && items.length
+      ? items
+      : JSON.parse(sessionStorage.getItem('navigationItems') || '[]');
+
+  useEffect(() => {
+    if (items.length) {
+      sessionStorage.setItem('navigationItems', JSON.stringify(items));
+    }
+  }, [items]);
 
   const [showBar, setShowBar] = useState(false);
   const buttonRef = useRef(null);
